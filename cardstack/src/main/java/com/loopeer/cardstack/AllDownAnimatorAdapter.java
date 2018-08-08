@@ -29,15 +29,29 @@ public class AllDownAnimatorAdapter extends AnimatorAdapter {
         }
     }
 
-    protected void itemCollapseAnimatorSet(CardStackView.ViewHolder viewHolder) {
+    
+    protected void itemCollapseAnimatorSet(ViewHolder viewHolder) {
 
-        if (mCardStackView.getSelectPosition() < 0) {
-            mCardStackView.setSelectPosition(0);
-            itemExpandAnimatorSet(viewHolder, 0);
-            return;
+        int childTop = this.mCardStackView.getPaddingTop();
+
+        for(int i = 0; i < this.mCardStackView.getChildCount(); ++i) {
+            View child = this.mCardStackView.getChildAt(i);
+            child.clearAnimation();
+            LayoutParams lp = (LayoutParams)child.getLayoutParams();
+            childTop += lp.topMargin;
+            ObjectAnimator oAnim;
+            if (i != 0) {
+                childTop -= this.mCardStackView.getOverlapGaps() * 2;
+                oAnim = ObjectAnimator.ofFloat(child, View.Y, new float[]{child.getY(), (float)childTop});
+                this.mSet.play(oAnim);
+            } else {
+                oAnim = ObjectAnimator.ofFloat(child, View.Y, new float[]{child.getY(), (float)childTop});
+                this.mSet.play(oAnim);
+            }
+
+            childTop += lp.mHeaderHeight;
         }
-        itemExpandAnimatorSet(viewHolder, 0);
-        return;
+
     }
 }
 
